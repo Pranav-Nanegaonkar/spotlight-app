@@ -1,6 +1,8 @@
+import { useAuth } from "@clerk/clerk-expo";
 import { Text, View, StyleSheet, Button } from "react-native";
 
 export default function HomeScreen({ navigation }: any) {
+  const { signOut } = useAuth();
   return (
     <View style={styles.container}>
       <Text>Edit src/navigation/screens/Home.tsx to edit this screen.</Text>
@@ -8,10 +10,7 @@ export default function HomeScreen({ navigation }: any) {
         title="go to notifications"
         onPress={() => navigation.navigate("Notification")}
       />
-      <Button
-        title="go to Bookmark"
-        onPress={() => navigation.navigate("Bookmark")}
-      />
+      <Button title="logout" onPress={() => signOut()} />
     </View>
   );
 }

@@ -1,10 +1,10 @@
 import { COLORS } from "@/constants/theme";
 import { styles } from "@/styles/auth.styles";
 import { Ionicons } from "@expo/vector-icons";
-import { useOAuth } from "@clerk/clerk-expo";
+import { useSSO } from "@clerk/clerk-expo";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 
-import React from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -20,18 +20,22 @@ export default function Login() {
   // Warm up the browser for better UX (preloads browser)
   useWarmUpBrowser();
 
-  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { startSSOFlow } = useSSO();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      const { createdSessionId, setActive } = await startOAuthFlow();
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: "oauth_google",
+      });
+      
+      console.log("-------------createdSessionId: ", createdSessionId);
 
-      if (createdSessionId) {
+      if (setActive && createdSessionId) {
         // User successfully signed in
-        setActive!({ session: createdSessionId });
-        
+        setActive({ session: createdSessionId });
+
         if (Platform.OS === "android") {
           ToastAndroid.show("Signed in successfully!", ToastAndroid.SHORT);
         }
@@ -39,7 +43,7 @@ export default function Login() {
     } catch (err: any) {
       // Handle errors
       const errorMessage = err?.errors?.[0]?.message || "Failed to sign in";
-      
+
       if (Platform.OS === "android") {
         ToastAndroid.show(errorMessage, ToastAndroid.LONG);
       } else {
@@ -73,7 +77,10 @@ export default function Login() {
       {/* LOGIN SECTION */}
       <View style={styles.loginSection}>
         <TouchableOpacity
-          style={[styles.googleButton, isLoading && styles.googleButtonDisabled]}
+          style={[
+            styles.googleButton,
+            isLoading && styles.googleButtonDisabled,
+          ]}
           onPress={handleGoogleSignIn}
           activeOpacity={0.9}
           disabled={isLoading}
