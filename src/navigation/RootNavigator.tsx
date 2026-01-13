@@ -44,7 +44,9 @@ export default function RootNavigator() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+          screenOptions={{ headerShown: false, animation: "slide_from_left" }}
+        >
           {isSignedIn ? (
             <Stack.Screen name="index" component={TabNavigator} />
           ) : (
