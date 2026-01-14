@@ -9,7 +9,7 @@ interface CreateUserParams {
 }
 
 export const CreateUserInSupabase = async (userData: CreateUserParams) => {
-  console.log("Creating user in Supabase...", userData);
+  // console.log("Creating user in Supabase...", userData);
 
   try {
     // First, check if user already exists

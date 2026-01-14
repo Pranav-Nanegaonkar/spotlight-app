@@ -5,8 +5,6 @@ import { useUser } from "@clerk/clerk-expo";
 export default function NotificationScreen({ navigation }: any) {
   const { isLoaded, isSignedIn, user } =  useUser();
 
-  console.log("-----------------USER: ", user);
-
   return (
     <View>
       {isLoaded && user && (

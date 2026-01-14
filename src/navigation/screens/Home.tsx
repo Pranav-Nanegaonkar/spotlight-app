@@ -1,24 +1,36 @@
 import { CreateUserInSupabase } from "@/supabase/user";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
 
 export default function HomeScreen({ navigation }: any) {
   const { signOut, isSignedIn } = useAuth();
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
+  const [userCreated, setUserCreated] = useState(false);
 
   useEffect(() => {
-    isSignedIn ?"":
-      (async () => {
-        await CreateUserInSupabase({
-          clerkId: user?.id,
-          email: user?.primaryEmailAddress?.emailAddress,
-          fullName: user?.fullName,
-          imageUrl: user?.imageUrl,
-          // username: "dummy",
-        });
-      })();
-  }, []);
+    const createUser = async () => {
+      // Only proceed if:
+      // 1. User data is loaded
+      // 2. User exists
+      // 3. We haven't already created the user
+      if (isLoaded && user && !userCreated) {
+        try {
+          await CreateUserInSupabase({
+            clerkId: user.id,
+            email: user.primaryEmailAddress?.emailAddress,
+            fullName: user.fullName,
+            imageUrl: user.imageUrl,
+          });
+          setUserCreated(true);
+        } catch (error) {
+          console.error("Error creating user in Supabase:", error);
+        }
+      }
+    };
+
+    createUser();
+  }, [isLoaded, user, userCreated]);
 
   return (
     <View style={styles.container}>
