@@ -3,15 +3,16 @@ import React from "react";
 import { useUser } from "@clerk/clerk-expo";
 
 export default function NotificationScreen({ navigation }: any) {
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isLoaded, isSignedIn, user } =  useUser();
 
-  // console.log("-----------------USER: ", user);
+  console.log("-----------------USER: ", user);
 
   return (
     <View>
       {isLoaded && user && (
         <View>
           <Text>{user.fullName}</Text>
+          <Text>{user.emailAddresses[0].emailAddress}</Text>
         </View>
       )}
     </View>

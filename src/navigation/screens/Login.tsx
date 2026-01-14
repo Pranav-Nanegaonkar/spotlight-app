@@ -1,7 +1,7 @@
 import { COLORS } from "@/constants/theme";
 import { styles } from "@/styles/auth.styles";
 import { Ionicons } from "@expo/vector-icons";
-import { useSSO } from "@clerk/clerk-expo";
+import { useSSO, useUser } from "@clerk/clerk-expo";
 import { useWarmUpBrowser } from "@/hooks/useWarmUpBrowser";
 
 import { useState } from "react";
@@ -21,21 +21,23 @@ export default function Login() {
   useWarmUpBrowser();
 
   const { startSSOFlow } = useSSO();
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      const { createdSessionId, setActive } = await startSSOFlow({
-        strategy: "oauth_google",
-      });
-      
-      console.log("-------------createdSessionId: ", createdSessionId);
+      const { createdSessionId, setActive } =
+        await startSSOFlow({
+          strategy: "oauth_google",
+        });
+
+     
 
       if (setActive && createdSessionId) {
         // User successfully signed in
-        setActive({ session: createdSessionId });
-
+        await setActive({ session: createdSessionId });
+        
         if (Platform.OS === "android") {
           ToastAndroid.show("Signed in successfully!", ToastAndroid.SHORT);
         }
