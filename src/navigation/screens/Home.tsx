@@ -2,7 +2,7 @@ import { CreateUserInSupabase } from "@/supabase/user";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useEffect, useState } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
-
+import {setItemAsync} from "expo-secure-store";
 export default function HomeScreen({ navigation }: any) {
   const { signOut, isSignedIn } = useAuth();
   const { user, isLoaded } = useUser();
@@ -16,13 +16,16 @@ export default function HomeScreen({ navigation }: any) {
       // 3. We haven't already created the user
       if (isLoaded && user && !userCreated) {
         try {
-          await CreateUserInSupabase({
+          const { user: userData } = await CreateUserInSupabase({
             clerkId: user.id,
             email: user.primaryEmailAddress?.emailAddress,
             fullName: user.fullName,
             imageUrl: user.imageUrl,
           });
           setUserCreated(true);
+
+          await setItemAsync("user", JSON.stringify(userData));
+
         } catch (error) {
           console.error("Error creating user in Supabase:", error);
         }

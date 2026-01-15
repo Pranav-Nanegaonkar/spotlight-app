@@ -20,6 +20,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { uploadFile } from "@/utils/fileupload";
 import { createPost } from "@/supabase/posts";
+import { getItem } from "expo-secure-store";
 
 export default function CreateScreen() {
   const { user } = useUser();
@@ -27,12 +28,13 @@ export default function CreateScreen() {
   const [caption, setCaption] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const data = getItem("user");
 
+  const userS = JSON.parse(data!);
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
       allowsEditing: true,
-      aspect: [1, 1],
       quality: 0.8,
     });
 
@@ -70,7 +72,7 @@ export default function CreateScreen() {
       // console.log(data);
 
       const postData = await createPost({
-        id: user?.id,
+        id: userS?.id,
         img: data.fullPath,
         storageId: data.id,
         caption: caption,
@@ -107,9 +109,9 @@ export default function CreateScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "android" ? "padding" : "height"}
       style={styles.container}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+      keyboardVerticalOffset={Platform.OS === "android" ? 100 : 0}
     >
       <View style={styles.contentContainer}>
         {/* HEADER */}
@@ -156,7 +158,7 @@ export default function CreateScreen() {
               <Image
                 source={selectedImage}
                 style={styles.previewImage}
-                contentFit="cover"
+                contentFit="contain"
                 transition={200}
               />
               <TouchableOpacity

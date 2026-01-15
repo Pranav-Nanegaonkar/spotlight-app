@@ -1,3 +1,4 @@
+
 import { Supabase } from "@/config/supabase";
 
 export const createPost = async (postData: any) => {

@@ -16,7 +16,7 @@ export const CreateUserInSupabase = async (userData: CreateUserParams) => {
     const { data: existingUser, error: fetchError } = await Supabase.from(
       "users"
     )
-      .select("id, clerk_id")
+      .select("*")
       .eq("clerk_id", userData.clerkId)
       .maybeSingle();
 
@@ -51,7 +51,7 @@ export const CreateUserInSupabase = async (userData: CreateUserParams) => {
         following: 0,
         posts: 0,
       })
-      .select()
+      .select("*")
       .single();
 
     if (insertError) {
